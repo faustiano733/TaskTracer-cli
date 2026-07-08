@@ -1,5 +1,5 @@
 
-import { TaskRepository } from './repository/taskRepository.js'
+import { TaskRepository } from './domain/repository/taskRepository.js'
 import { createDb } from './utils/functions.js'
 const args = process.argv.slice(2)
 

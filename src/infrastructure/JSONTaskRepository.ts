@@ -1,11 +1,12 @@
 import fs from 'fs/promises'
 import path from 'path'
+import type { Task } from '../domain/entities/Task.js';
 export class TaskRepository {
     
-    constructor(){
+    constructor(private db:{task:Task[], last_id:number},
+    private dbPath: string){
         this.dbPath = path.resolve('db/db.json')
-        this.db = {}
-        this.transaction = {}
+        
     }
 
     async init (){
@@ -17,7 +18,7 @@ export class TaskRepository {
         await fs.writeFile(this.dbPath, JSON.stringify(this.db))
     }
 
-    async add(description){
+    async add(description:string){
         const now = new Date
         const task = {
             id : this.db.last_id + 1,
@@ -35,7 +36,7 @@ export class TaskRepository {
         
     }
 
-    async delete(id){
+    async delete(id:number){
         const taskIndex = this.binaryTaskSearch(id)
         
         if(taskIndex == -1){
@@ -48,7 +49,7 @@ export class TaskRepository {
         
     }
 
-    async markInProgress(id){
+    async markInProgress(id:number){
         const taskIndex = this.binaryTaskSearch(id)
         if(taskIndex == -1){
             console.log('Tarefa nao existe')
@@ -59,7 +60,7 @@ export class TaskRepository {
         await this.commit();
         return true
     }
-    async markDone(id){
+    async markDone(id:number){
         const taskIndex = this.binaryTaskSearch(id)
         if(taskIndex == -1){
             console.log('Tarefa nao existe')
@@ -74,13 +75,13 @@ export class TaskRepository {
     async findAll(){
         return this.db.task
     }
-    async findByStatus(status){
+    async findByStatus(status:string){
         let filteredTasks = this.db.task.filter(task=>task.status == status)
 
         return filteredTasks
     }
 
-    binaryTaskSearch(id){
+    binaryTaskSearch(id:number):number{
         const tasks = this.db.task
         let max = tasks.length - 1
         let min = 0
